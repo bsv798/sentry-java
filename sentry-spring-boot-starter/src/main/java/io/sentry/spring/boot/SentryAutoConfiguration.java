@@ -19,12 +19,15 @@ import io.sentry.spring.tracing.SentryAdviceConfiguration;
 import io.sentry.spring.tracing.SentrySpanPointcutConfiguration;
 import io.sentry.spring.tracing.SentryTracingFilter;
 import io.sentry.spring.tracing.SentryTransactionPointcutConfiguration;
+import io.sentry.spring.tracing.client.feign.SentryTracingFeignClientPostProcessor;
+import io.sentry.spring.tracing.client.feign.SentryTracingFeignClientRequestInterceptor;
 import io.sentry.transport.ITransportGate;
 import io.sentry.transport.apache.ApacheHttpClientTransportFactory;
 import java.util.List;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,6 +37,8 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.openfeign.FeignAutoConfiguration;
+import org.springframework.cloud.openfeign.FeignContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -184,6 +189,23 @@ public class SentryAutoConfiguration {
       @Bean
       public @NotNull ApacheHttpClientTransportFactory apacheHttpClientTransportFactory() {
         return new ApacheHttpClientTransportFactory();
+      }
+    }
+
+    @Configuration
+    @ConditionalOnClass(FeignContext.class)
+    @AutoConfigureAfter(FeignAutoConfiguration.class)
+    @Open
+    static class FeignTracingClientAutoconfiguration {
+
+      @Bean
+      public SentryTracingFeignClientPostProcessor feignTracingClientPostProcessor() {
+        return new SentryTracingFeignClientPostProcessor();
+      }
+
+      @Bean
+      public SentryTracingFeignClientRequestInterceptor feignTracingClientRequestInterceptor(IHub hub) {
+        return new SentryTracingFeignClientRequestInterceptor(hub);
       }
     }
 

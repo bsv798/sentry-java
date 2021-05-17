@@ -36,6 +36,7 @@ dependencies {
     compileOnly(Config.Libs.springAop)
     compileOnly(Config.Libs.aspectj)
     compileOnly(Config.Libs.servletApi)
+    compileOnly(Config.Libs.openfeignCore)
 
     compileOnly(Config.CompileOnly.nopen)
     errorprone(Config.CompileOnly.nopenChecker)
