@@ -38,8 +38,10 @@ dependencies {
     implementation(Config.Libs.springBootStarter)
     compileOnly(Config.Libs.springWeb)
     compileOnly(Config.Libs.servletApi)
+    compileOnly(Config.Libs.springBootAutoconfigure)
     compileOnly(Config.Libs.springBootStarterAop)
     compileOnly(Config.Libs.springCloudOpenfeignCore)
+    compileOnly(Config.Libs.projectreactorNettyHttp)
 
     annotationProcessor(Config.AnnotationProcessors.springBootAutoConfigure)
     annotationProcessor(Config.AnnotationProcessors.springBootConfiguration)

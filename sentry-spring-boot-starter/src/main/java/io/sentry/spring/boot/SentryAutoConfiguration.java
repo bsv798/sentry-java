@@ -21,6 +21,8 @@ import io.sentry.spring.tracing.SentryTracingFilter;
 import io.sentry.spring.tracing.SentryTransactionPointcutConfiguration;
 import io.sentry.spring.tracing.client.feign.SentryTracingFeignClientPostProcessor;
 import io.sentry.spring.tracing.client.feign.SentryTracingFeignClientRequestInterceptor;
+import io.sentry.spring.tracing.client.webflux.SentryTracingWebfluxHttpClientBeanPostProcessor;
+import io.sentry.spring.tracing.client.webflux.SentryTracingWebfluxFilter;
 import io.sentry.transport.ITransportGate;
 import io.sentry.transport.apache.ApacheHttpClientTransportFactory;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -45,6 +48,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
+import reactor.netty.http.client.HttpClient;
 
 @Configuration
 @ConditionalOnProperty(name = "sentry.dsn")
@@ -206,6 +210,23 @@ public class SentryAutoConfiguration {
       @Bean
       public SentryTracingFeignClientRequestInterceptor feignTracingClientRequestInterceptor(IHub hub) {
         return new SentryTracingFeignClientRequestInterceptor(hub);
+      }
+    }
+
+    @Configuration
+    @ConditionalOnClass(HttpClient.class)
+    @AutoConfigureAfter(ClientHttpConnectorAutoConfiguration.class)
+    @Open
+    static class WebfluxTracingClientAutoconfiguration {
+
+      @Bean
+      public SentryTracingWebfluxFilter webTracingClientGlobalFilter(IHub hub) {
+        return new SentryTracingWebfluxFilter(hub);
+      }
+
+      @Bean
+      public SentryTracingWebfluxHttpClientBeanPostProcessor httpClientBeanPostProcessor() {
+        return new SentryTracingWebfluxHttpClientBeanPostProcessor();
       }
     }
 

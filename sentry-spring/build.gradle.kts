@@ -33,10 +33,13 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     api(project(":sentry"))
     compileOnly(Config.Libs.springWeb)
+    compileOnly(Config.Libs.springWebflux)
     compileOnly(Config.Libs.springAop)
     compileOnly(Config.Libs.aspectj)
     compileOnly(Config.Libs.servletApi)
     compileOnly(Config.Libs.openfeignCore)
+    compileOnly(Config.Libs.projectreactorCore)
+    compileOnly(Config.Libs.projectreactorNettyHttp)
 
     compileOnly(Config.CompileOnly.nopen)
     errorprone(Config.CompileOnly.nopenChecker)
